@@ -127,6 +127,13 @@ io.set('authorization', function (handshakeData, cb) {
         });
 
         messages.find().limit(5).sort({ timestamp: 1 }).toArray(function (err, array) {
+            if (err) {
+                return console.error(err);
+            }
+            else if (!array) {
+                return;
+            }
+
             array.forEach(function(msg) {
                 socket.emit('msg', msg);
             });
