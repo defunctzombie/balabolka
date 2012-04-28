@@ -12,6 +12,7 @@
     , "express": "2.5.9"
     , "stylus": "0.26.0"
     , "jsbundler": "0.0.7"
+    , "mongolian": "0.1.18"
     , "hbs": "git://github.com/shtylman/hbs.git#01894c"
     , "logger": "git://github.com/shtylman/node-logger.git#f5fbbd"
   },
