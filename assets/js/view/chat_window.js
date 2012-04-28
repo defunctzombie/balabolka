@@ -26,13 +26,17 @@ function ChatWindow(room) {
     body.hide();
 
     $('body').append(window);
-    
+
     window.hide();
 
     title.text('balabolka');
 
     title.click(function() {
-        body.slideToggle();
+        body.slideToggle(function() {
+            if ($(this).css('display') !== 'none') {
+                msg_input.focus();
+            }
+        });
     });
 
     // number of users in the room
