@@ -1,4 +1,7 @@
 
+// builtin
+var url = require('url');
+
 // 3rd party
 var express = require('express');
 var hbs = require('hbs');
@@ -75,25 +78,22 @@ app.get('/domains', function(req, res, next) {
 var rooms = {};
 
 var io = require('socket.io').listen(app);
+io.set('log level', -1);
 
 // intercept global authorization to setup a room for the domain
 io.set('authorization', function (handshakeData, cb) {
-    cb(null, true); // error first callback style
-
     // get the domain from the origin header and make a room for it
-    var domain = handshakeData.headers.origin;
-    domain = domain.replace(/^http(s)?:\/\//, '');
-    domain = domain.replace(/:.*/, '');
-    handshakeData.domain = domain;
+    var hostname = handshakeData.headers.host;
+    hostname = hostname.replace(/:.*/, '');
 
     // no need to make the room again
-    if (rooms[domain]) {
+    if (rooms[hostname]) {
         return;
     }
 
-    // create a new room just for the domain
-    var room = io.of('/' + domain);
-    rooms[domain] = room;
+    // create a new room just for the hostname
+    var room = io.of('/' + hostname);
+    rooms[hostname] = room;
 
     // this is where we can do per room authorization
     room.authorization(function(data, cb) {
@@ -101,9 +101,8 @@ io.set('authorization', function (handshakeData, cb) {
     });
 
     var count = 0;
-
     room.on('connection', function(socket) {
-        console.log('new connection to main domain room');
+        console.log('new connection to main hostname room');
 
         room.emit('count', ++count);
 
@@ -120,8 +119,8 @@ io.set('authorization', function (handshakeData, cb) {
 
             room.emit('msg', out);
 
-            // set domain
-            out.domain = domain;
+            // set hostname
+            out.hostname = hostname;
             messages.insert(out);
         });
 
