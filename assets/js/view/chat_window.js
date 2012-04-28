@@ -51,13 +51,14 @@ function ChatWindow(room) {
 
     // new incoming message
     room.on('msg', function(details) {
-        var nick = details.nick;
-        var msg = details.msg;
+        var nick = $('<div />').text(details.nick).html();
+        var msg = $('<div />').text(details.msg).html();
+
         var span = $('<span><strong>' + nick + ':</strong> ' + msg + '</span>');
         span.addClass('balabolka-message');
         messages.append($('<hr/>')).append(span);
         messages.scrollTop(messages[0].scrollHeight);
-        
+
         if(notify == undefined && body.is(":hidden")) {
           notify = setInterval(function(){
             title.toggleClass("balabolka-title-blink");
