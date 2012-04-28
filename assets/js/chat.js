@@ -1,21 +1,13 @@
 
-// TODO chat window init code
+var ChatWindow = require('./view/chat_window');
 
 // unique room for domain
 var domain = window.location.hostname;
 var room = io.connect('http://localhost/' + domain);
 
+var chat_window = new ChatWindow(room);
+
 // connected
 room.on('connect', function() {
-});
-
-// number of users in the room
-room.on('count', function(count) {
-    console.log('users: ', count);
-});
-
-// new incoming message
-room.on('msg', function(details) {
-    console.log(details);
 });
 

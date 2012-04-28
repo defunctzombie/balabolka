@@ -59,18 +59,36 @@ app.use('/js/chat.js', jsbundler.bundle(kPubdir + '/js/chat.js').middleware());
 
 app.use(express.static(kPubdir));
 
+app.error(function(err, req, res, next) {
+    var status = err.status || 500;
+
+    if (status >= 500) {
+        console.error(err.stack);
+    }
+
+    res.send(err.message, status);
+});
+
 app.get('/', function(req, res, next) {
     res.render('index');
 });
 
 /// domain details
 app.get('/domain/:domain_name', function(req, res, next) {
+    var domain = req.param('domain_name');
+
+    var room = rooms[domain];
+    if (!room) {
+        return next(new NotFound());
+    }
+
+    res.render('domain');
 });
 
 /// list all of the chat rooms currently active
 app.get('/domains', function(req, res, next) {
     res.render('domains', {
-        rooms: rooms
+        rooms: Object.keys(rooms)
     });
 });
 
@@ -113,6 +131,10 @@ io.set('authorization', function (handshakeData, cb) {
         });
 
         socket.on('msg', function(data) {
+            if (!data || data.length === 0) {
+                return;
+            }
+
             var out = {
                 msg: data,
                 nick: 'TODO',
@@ -126,7 +148,7 @@ io.set('authorization', function (handshakeData, cb) {
             messages.insert(out);
         });
 
-        messages.find().limit(5).sort({ timestamp: 1 }).toArray(function (err, array) {
+        messages.find().sort({ timestamp: -1 }).limit(5).toArray(function (err, array) {
             if (err) {
                 return console.error(err);
             }
@@ -134,6 +156,7 @@ io.set('authorization', function (handshakeData, cb) {
                 return;
             }
 
+            array.reverse();
             array.forEach(function(msg) {
                 socket.emit('msg', msg);
             });
@@ -146,6 +169,13 @@ io.set('authorization', function (handshakeData, cb) {
         // how can the client force certain nicknames?
     });
 });
+
+var NotFound = function(msg) {
+    Error.call(this);
+    this.name = 'NotFound';
+    this.status = 404;
+    this.message = msg;
+};
 
 if (require.main === module) {
     app.listen(8000);
