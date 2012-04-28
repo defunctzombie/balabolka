@@ -1,0 +1,9 @@
+
+opacity(opacity = 100) {
+    filter unquote('progid:DXImageTransform.Microsoft.Alpha(Opacity=' + round(opacity) + ')');
+    -moz-opacity: (opacity/100);
+    -khtml-opacity: (opacity/100);
+
+    opacity: (opacity/100);
+}
+
