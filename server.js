@@ -89,8 +89,8 @@ app.get('/domain/:domain_name', function(req, res, next) {
 });
 
 /// list all of the chat rooms currently active
-app.get('/domains', function(req, res, next) {
-    res.render('domains', {
+app.get('/rooms', function(req, res, next) {
+    res.render('rooms', {
         rooms: Object.keys(rooms)
     });
 });
@@ -123,10 +123,12 @@ io.set('authorization', function (handshakeData, cb) {
 
     var count = 0;
     room.on('connection', function(socket) {
-        console.log('new connection to main ' + hostname + ' room');
 
+        // generate a random nickname for the user
         var nick = name.random();
 
+        // inform them of how many peers in the chat
+        // including themselves
         room.emit('count', ++count);
 
         socket.on('nick', function(data) {
