@@ -104,6 +104,7 @@ io.set('log level', -1);
 io.set('match origin protocol', false);
 io.set('browser client etag', true);
 io.set('browser client minification', true);
+//io.set('transports', ['xhr-polling', 'jsonp-polling']);
 
 // intercept global authorization to setup a room for the domain
 io.set('authorization', function (handshakeData, cb) {
@@ -122,18 +123,12 @@ io.set('authorization', function (handshakeData, cb) {
     var room = io.of('/' + hostname);
     rooms[hostname] = room;
 
-    // this is where we can do per room authorization
-    room.authorization(function(data, cb) {
-        cb(null, true);
-    });
-
     var count = 0;
-    
     room.on('connection', function(socket) {
-        console.log('new connection to main hostname room');
-        
+        console.log('new connection to main ' + hostname + ' room');
+
         var nick = name.random();
-        
+
         room.emit('count', ++count);
 
         socket.on('nick', function(data) {
@@ -177,8 +172,6 @@ io.set('authorization', function (handshakeData, cb) {
         socket.on('disconnect', function() {
             room.emit('count', --count);
         });
-
-        // how can the client force certain nicknames?
     });
 });
 
