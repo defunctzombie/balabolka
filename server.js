@@ -82,6 +82,8 @@ io.set('log level', -1);
 
 // intercept global authorization to setup a room for the domain
 io.set('authorization', function (handshakeData, cb) {
+    cb(null, true);
+
     // get the domain from the origin header and make a room for it
     var hostname = handshakeData.headers.host;
     hostname = hostname.replace(/:.*/, '');
