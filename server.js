@@ -96,7 +96,11 @@ app.get('/domains', function(req, res, next) {
 var rooms = {};
 
 var io = require('socket.io').listen(app);
+
 io.set('log level', -1);
+io.set('match origin protocol', false);
+io.set('browser client etag', true);
+io.set('browser client minification', true);
 
 // intercept global authorization to setup a room for the domain
 io.set('authorization', function (handshakeData, cb) {
