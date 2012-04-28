@@ -46,7 +46,7 @@ function ChatWindow(room) {
     room.on('msg', function(details) {
         var nick = details.nick;
         var msg = details.msg;
-        var span = $('<span><strong>' + nick + '</strong> ' + msg + '</span>');
+        var span = $('<span><strong>' + nick + ':</strong> ' + msg + '</span>');
         span.addClass('balabolka-message');
         messages.append($('<hr/>')).append(span);
         messages.scrollTop(messages[0].scrollHeight);
