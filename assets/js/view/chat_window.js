@@ -12,13 +12,13 @@ function ChatWindow(room) {
         if (!msg || msg.length === 0) {
             return false;
         }
-
         msg_input.val('');
         room.emit('msg', msg);
 
         // don't cause form to submit
         return false;
     });
+    var notify;
 
     window.append(title).append(body);
     body.append(messages).append(chat_form);
@@ -32,11 +32,11 @@ function ChatWindow(room) {
     title.text('balabolka');
 
     title.click(function() {
-        body.slideToggle(function() {
-            if ($(this).css('display') !== 'none') {
-                msg_input.focus();
-            }
-        });
+        body.slideToggle();
+        clearInterval(notify);
+        notify = null;
+        title.removeClass();
+        title.addClass('balabolka-title');
     });
 
     // number of users in the room
@@ -57,6 +57,12 @@ function ChatWindow(room) {
         span.addClass('balabolka-message');
         messages.append($('<hr/>')).append(span);
         messages.scrollTop(messages[0].scrollHeight);
+        
+        if(notify == undefined && body.is(":hidden")) {
+          notify = setInterval(function(){
+            title.toggleClass("balabolka-title-blink");
+          }, 2000);
+        }
     });
 };
 
