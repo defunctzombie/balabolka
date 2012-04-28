@@ -17,7 +17,6 @@ function main() {
 
     // connected
     room.on('connect', function() {
-        console.log('connected');
     });
 }
 
