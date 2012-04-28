@@ -3,7 +3,7 @@
 
 // unique room for domain
 var domain = window.location.hostname;
-var room = io.connect('http://balabolka.localhost/' + domain);
+var room = io.connect('http://localhost/' + domain);
 
 // connected
 room.on('connect', function() {
