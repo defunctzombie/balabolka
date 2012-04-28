@@ -1,0 +1,23 @@
+{
+  "author": "Roman Shtylman <shtylman@gmail.com>",
+  "name": "balabolka",
+  "description": "hosted chat",
+  "version": "0.0.0",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/shtylman/balabolka.git"
+  },
+  "dependencies": {
+      "socket.io": "0.9.6"
+    , "express": "2.5.9"
+    , "stylus": "0.26.0"
+    , "jsbundler": "0.0.7"
+    , "hbs": "git://github.com/shtylman/hbs.git#01894c"
+    , "logger": "git://github.com/shtylman/node-logger.git#f5fbbd"
+  },
+  "devDependencies": {},
+  "optionalDependencies": {},
+  "engines": {
+    "node": "*"
+  }
+}
