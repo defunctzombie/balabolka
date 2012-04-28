@@ -16,15 +16,7 @@ var name = require('./name');
 var kProduction = process.env === 'production';
 var kPubdir = __dirname + '/assets';
 
-// Create a server instance with default host and port
-if (process.env.OPENSHIFT_INTERNAL_IP) {
-    var mongo_host = process.env.OPENSHIFT_INTERNAL_IP;
-    var server = new Mongolian('mongo://admin:lgmtv9RVrh43@' + mongo_host + ':27017');
-}
-else {
-    var server = new Mongolian();
-}
-
+var server = new Mongolian(process.env.OPENSHIFT_NOSQL_DB_URL);
 var db = server.db('ya');
 
 // previous messages
@@ -150,10 +142,9 @@ io.set('authorization', function (handshakeData, cb) {
 
             // set hostname
             out.hostname = hostname;
-            //messages.insert(out);
+            messages.insert(out);
         });
 
-        /*
         messages.find().sort({ timestamp: -1 }).limit(5).toArray(function (err, array) {
             if (err) {
                 return console.error(err);
@@ -167,7 +158,6 @@ io.set('authorization', function (handshakeData, cb) {
                 socket.emit('msg', msg);
             });
         });
-        */
 
         socket.on('disconnect', function() {
             room.emit('count', --count);
