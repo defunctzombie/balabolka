@@ -26,6 +26,8 @@ function ChatWindow(room) {
     body.hide();
 
     $('body').append(window);
+    
+    window.hide();
 
     title.text('balabolka');
 
@@ -36,6 +38,7 @@ function ChatWindow(room) {
     // number of users in the room
     room.on('count', function(count) {
         title.text('balabolka - ' + count + ' peers');
+        window.show();
     });
 
     room.on('disconnect', function() {
