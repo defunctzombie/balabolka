@@ -9,6 +9,9 @@ var jsbundler = require('jsbundler');
 var stylus = require('stylus');
 var Mongolian = require('mongolian');
 
+// locals
+var name = require('./name');
+
 // globals
 var kProduction = process.env === 'production';
 var kPubdir = __dirname + '/assets';
@@ -125,13 +128,16 @@ io.set('authorization', function (handshakeData, cb) {
     });
 
     var count = 0;
+    
     room.on('connection', function(socket) {
         console.log('new connection to main hostname room');
-
+        
+        var nick = name.random();
+        
         room.emit('count', ++count);
 
         socket.on('nick', function(data) {
-            // TODO change nickname
+            nick = data;
         });
 
         socket.on('msg', function(data) {
@@ -141,7 +147,7 @@ io.set('authorization', function (handshakeData, cb) {
 
             var out = {
                 msg: data,
-                nick: 'TODO',
+                nick: nick,
                 timestamp: new Date()
             };
 
