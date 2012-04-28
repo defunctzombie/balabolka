@@ -149,9 +149,10 @@ io.set('authorization', function (handshakeData, cb) {
 
             // set hostname
             out.hostname = hostname;
-            messages.insert(out);
+            //messages.insert(out);
         });
 
+        /*
         messages.find().sort({ timestamp: -1 }).limit(5).toArray(function (err, array) {
             if (err) {
                 return console.error(err);
@@ -165,6 +166,7 @@ io.set('authorization', function (handshakeData, cb) {
                 socket.emit('msg', msg);
             });
         });
+        */
 
         socket.on('disconnect', function() {
             room.emit('count', --count);
