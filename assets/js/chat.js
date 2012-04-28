@@ -3,7 +3,7 @@ var ChatWindow = require('./view/chat_window');
 
 // unique room for domain
 var domain = window.location.hostname;
-var room = io.connect('http://localhost:8000/' + domain);
+var room = io.connect('/' + domain);
 
 var chat_window = new ChatWindow(room);
 
