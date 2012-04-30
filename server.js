@@ -98,10 +98,12 @@ io.set('browser client minification', true);
 
 // intercept global authorization to setup a room for the domain
 io.set('authorization', function (handshakeData, cb) {
-    cb(null, true);
-
     // get the domain from the origin header and make a room for it
     var referer = handshakeData.headers.referer || handshakeData.headers.referrer;
+
+    // no connection if no referer
+    cb(null, !!referer);
+
     var hostname = url.parse(referer).hostname;
 
     // no need to make the room again
