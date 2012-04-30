@@ -1,6 +1,6 @@
 
 function ChatWindow(room) {
-    var window = $('<div>').addClass('balabolka-window');
+    var chat_window = $('<div>').addClass('balabolka-window');
     var title = $('<div>').addClass('balabolka-title');
     var body = $('<div>').addClass('balabolka-body');
     var messages = $('<div>').addClass('balabolka-messages');
@@ -20,16 +20,14 @@ function ChatWindow(room) {
     });
     var notify;
 
-    window.append(title).append(body);
+    chat_window.append(title).append(body);
     body.append(messages).append(chat_form);
     chat_form.append(msg_input);
     body.hide();
 
-    $('body').append(window);
+    $('body').append(chat_window);
 
-    window.hide();
-
-    title.text('balabolka');
+    chat_window.hide();
 
     title.click(function() {
         body.slideToggle();
@@ -41,8 +39,8 @@ function ChatWindow(room) {
 
     // number of users in the room
     room.on('count', function(count) {
-        title.text('balabolka - ' + count + ' peers');
-        window.show();
+        title.text(window.location.hostname + ' chat - ' + count + ' peers');
+        chat_window.show();
     });
 
     room.on('disconnect', function() {
@@ -89,8 +87,8 @@ function ChatWindow(room) {
 
         if(notify == undefined && body.is(":hidden")) {
           notify = setInterval(function(){
-            title.toggleClass("balabolka-title-blink");
-          }, 2000);
+            title.toggleClass("balabolka-title-alert");
+          }, 1500);
         }
     });
 };

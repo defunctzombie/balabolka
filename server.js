@@ -8,6 +8,7 @@ var hbs = require('hbs');
 var jsbundler = require('jsbundler');
 var stylus = require('stylus');
 var Mongolian = require('mongolian');
+var socketio = require('socket.io');
 
 // locals
 var name = require('./name');
@@ -38,7 +39,6 @@ function compile(str, path) {
     return stylus(str)
         .import(kPubdir + '/css/mixins/border-radius')
         .import(kPubdir + '/css/mixins/box-shadow')
-        .import(kPubdir + '/css/mixins/opacity')
         .set('filename', path)
         .set('warn', true)
         .set('compress', true);
@@ -90,7 +90,7 @@ app.get('/rooms', function(req, res, next) {
 // domain -> channel
 var rooms = {};
 
-var io = require('socket.io').listen(app);
+var io = socketio.listen(app);
 
 io.set('log level', -1);
 io.set('browser client etag', true);
