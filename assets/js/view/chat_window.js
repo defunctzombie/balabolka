@@ -53,24 +53,33 @@ function ChatWindow(room) {
     room.on('msg', function(details) {
         var nick = $('<div />').text(details.nick).html();
         var msg = $('<div />').text(details.msg).html();
-        
+
         var emotimap = {
           ':\\)':'smile',
+          ':-\\)':'smile',
           ';\\)':'wink',
+          ';-\\)':'wink',
           ':D':'grin',
+          ':-D':'grin',
           ':\\(':'sad',
+          ':-\\(':'sad',
           ':o':'eek',
+          ':-o':'eek',
           '8O':'shock',
           '8\\)':'cool',
+          '8-\\)':'cool',
           ':x':'mad',
+          ':-x':'mad',
           ':P':'razz',
+          ':-P':'razz',
+          ':p':'razz',
           ':\\|':'neutral'
         };
-        
+
         Object.keys(emotimap).forEach(function(emoticon) {
           var smile = emotimap[emoticon];
-          var re = new RegExp(emoticon, "g");
-          msg = msg.replace(re, '<span class="emoticon ' + smile + '"></span>');
+          var re = new RegExp(emoticon, 'g');
+          msg = msg.replace(re, '<span class="balabolka-emoticon ' + smile + '"></span>');
         });
 
         var span = $('<span><strong>' + nick + ':</strong> ' + msg + '</span>');
