@@ -8,6 +8,7 @@ function main() {
 
     // unique room for domain
     var domain = window.location.hostname;
+
     var room = io.connect('/' + domain, {
         host: host,
         port: port
@@ -39,4 +40,6 @@ function check_socketio() {
 if (window.jQuery) {
     check_socketio();
 }
-load_script('//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js', check_socketio);
+else {
+    load_script('//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js', check_socketio);
+}
