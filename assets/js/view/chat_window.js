@@ -39,7 +39,7 @@ function ChatWindow(room) {
 
     // number of users in the room
     room.on('count', function(count) {
-        title.text(window.location.hostname + ' chat - ' + count + ' peers');
+        title.text(window.location.hostname + ' chat - ' + (count - 1) + ' peers');
         chat_window.show();
     });
 
