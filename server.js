@@ -145,7 +145,7 @@ io.set('authorization', function (handshakeData, cb) {
             messages.insert(out);
         });
 
-        messages.find().sort({ timestamp: -1 }).limit(5).toArray(function (err, array) {
+        messages.find({ hostname: hostname }).sort({ timestamp: -1 }).limit(5).toArray(function (err, array) {
             if (err) {
                 return console.error(err);
             }
