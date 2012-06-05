@@ -64,6 +64,7 @@ function ChatWindow(room) {
           ':o':'eek',
           ':-o':'eek',
           '8O':'shock',
+          '8-O':'shock',
           '8\\)':'cool',
           '8-\\)':'cool',
           ':x':'mad',
@@ -71,7 +72,9 @@ function ChatWindow(room) {
           ':P':'razz',
           ':-P':'razz',
           ':p':'razz',
-          ':\\|':'neutral'
+          ':-p':'razz',
+          ':\\|':'neutral',
+          ':-\\|':'neutral'
         };
 
         Object.keys(emotimap).forEach(function(emoticon) {
