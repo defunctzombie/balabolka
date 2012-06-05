@@ -37,10 +37,29 @@ function ChatWindow(room) {
         title.addClass('balabolka-title');
     });
 
+    // default chat window setting
+    var chat_title = window.location.hostname;
+    var show_peer = true;
+    var show_emoticon = true;
+
+    // change the setting if defined
+    if(typeof balabolka_opt != "undefined") {
+      if (typeof balabolka_opt.title != "undefined")
+        chat_title = balabolka_opt.title;
+      if (typeof balabolka_opt.show_peer != "undefined")
+        if (balabolka_opt.show_peer == "no")
+          show_peer = false;
+      if (typeof balabolka_opt.show_emoticon != "undefined")
+        if (balabolka_opt.show_emoticon == "no")
+          show_emoticon = false;
+    }
+
     // number of users in the room
     room.on('count', function(count) {
-        title.text(window.location.hostname + ' chat - ' + (count - 1) + ' peers');
-        chat_window.show();
+      title.text(chat_title);
+      if(show_peer)
+        title.append(' - ' + (count - 1) + ' peers');
+      chat_window.show();
     });
 
     room.on('disconnect', function() {
@@ -52,36 +71,38 @@ function ChatWindow(room) {
         var nick = $('<div />').text(details.nick).html();
         var msg = $('<div />').text(details.msg).html();
 
-        var emotimap = {
-          ':\\)':'smile',
-          ':-\\)':'smile',
-          ';\\)':'wink',
-          ';-\\)':'wink',
-          ':D':'grin',
-          ':-D':'grin',
-          ':\\(':'sad',
-          ':-\\(':'sad',
-          ':o':'eek',
-          ':-o':'eek',
-          '8O':'shock',
-          '8-O':'shock',
-          '8\\)':'cool',
-          '8-\\)':'cool',
-          ':x':'mad',
-          ':-x':'mad',
-          ':P':'razz',
-          ':-P':'razz',
-          ':p':'razz',
-          ':-p':'razz',
-          ':\\|':'neutral',
-          ':-\\|':'neutral'
-        };
-
-        Object.keys(emotimap).forEach(function(emoticon) {
-          var smile = emotimap[emoticon];
-          var re = new RegExp(emoticon, 'g');
-          msg = msg.replace(re, '<span class="balabolka-emoticon ' + smile + '"></span>');
-        });
+        if (show_emoticon) {
+          var emotimap = {
+            ':\\)':'smile',
+            ':-\\)':'smile',
+            ';\\)':'wink',
+            ';-\\)':'wink',
+            ':D':'grin',
+            ':-D':'grin',
+            ':\\(':'sad',
+            ':-\\(':'sad',
+            ':o':'eek',
+            ':-o':'eek',
+            '8O':'shock',
+            '8-O':'shock',
+            '8\\)':'cool',
+            '8-\\)':'cool',
+            ':x':'mad',
+            ':-x':'mad',
+            ':P':'razz',
+            ':-P':'razz',
+            ':p':'razz',
+            ':-p':'razz',
+            ':\\|':'neutral',
+            ':-\\|':'neutral'
+          };
+        
+          Object.keys(emotimap).forEach(function(emoticon) {
+            var smile = emotimap[emoticon];
+            var re = new RegExp(emoticon, 'g');
+            msg = msg.replace(re, '<span class="balabolka-emoticon ' + smile + '"></span>');
+          });
+        }
 
         var span = $('<span><strong>' + nick + ':</strong> ' + msg + '</span>');
         span.addClass('balabolka-message');
