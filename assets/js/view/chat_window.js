@@ -38,28 +38,45 @@ function ChatWindow(room) {
     });
 
     // default chat window setting
-    var chat_title = window.location.hostname;
     var show_peer = true;
     var show_emoticon = true;
 
-    // change the setting if defined
-    if(typeof balabolka_opt != "undefined") {
-      if (typeof balabolka_opt.title != "undefined")
-        chat_title = balabolka_opt.title;
-      if (typeof balabolka_opt.show_peer != "undefined")
-        if (balabolka_opt.show_peer == "no")
-          show_peer = false;
-      if (typeof balabolka_opt.show_emoticon != "undefined")
-        if (balabolka_opt.show_emoticon == "no")
-          show_emoticon = false;
+    var chat_title_fn = function() {
+        return window.location.hostname;
+    };
+
+    var peer_fn = function(count) {
+        return ' - ' + count + ' peers';
+    };
+
+    var opt = window._balabolka;
+
+    // user specified options
+    if (opt) {
+
+        if (opt.title !== undefined) {
+            chat_title_fn = (opt.title instanceof Function) ? opt.title :
+                function() { return opt.title };
+        }
+
+        if (opt.show_emoticon !== undefined) {
+            show_emoticon = opt.show_emoticon;
+        }
+
+        if (opt.peers !== undefined) {
+            peer_fn = opt.peers;
+        }
     }
 
     // number of users in the room
     room.on('count', function(count) {
-      title.text(chat_title);
-      if(show_peer)
-        title.append(' - ' + (count - 1) + ' peers');
-      chat_window.show();
+        var chat_title = chat_title_fn();
+        if (peer_fn) {
+            chat_title += peer_fn(count - 1);
+        }
+
+        title.text(chat_title);
+        chat_window.show();
     });
 
     room.on('disconnect', function() {
@@ -72,36 +89,36 @@ function ChatWindow(room) {
         var msg = $('<div />').text(details.msg).html();
 
         if (show_emoticon) {
-          var emotimap = {
-            ':\\)':'smile',
-            ':-\\)':'smile',
-            ';\\)':'wink',
-            ';-\\)':'wink',
-            ':D':'grin',
-            ':-D':'grin',
-            ':\\(':'sad',
-            ':-\\(':'sad',
-            ':o':'eek',
-            ':-o':'eek',
-            '8O':'shock',
-            '8-O':'shock',
-            '8\\)':'cool',
-            '8-\\)':'cool',
-            ':x':'mad',
-            ':-x':'mad',
-            ':P':'razz',
-            ':-P':'razz',
-            ':p':'razz',
-            ':-p':'razz',
-            ':\\|':'neutral',
-            ':-\\|':'neutral'
-          };
-        
-          Object.keys(emotimap).forEach(function(emoticon) {
-            var smile = emotimap[emoticon];
-            var re = new RegExp(emoticon, 'g');
-            msg = msg.replace(re, '<span class="balabolka-emoticon ' + smile + '"></span>');
-          });
+            var emotimap = {
+                ':\\)':'smile',
+                ':-\\)':'smile',
+                ';\\)':'wink',
+                ';-\\)':'wink',
+                ':D':'grin',
+                ':-D':'grin',
+                ':\\(':'sad',
+                ':-\\(':'sad',
+                ':o':'eek',
+                ':-o':'eek',
+                '8O':'shock',
+                '8-O':'shock',
+                '8\\)':'cool',
+                '8-\\)':'cool',
+                ':x':'mad',
+                ':-x':'mad',
+                ':P':'razz',
+                ':-P':'razz',
+                ':p':'razz',
+                ':-p':'razz',
+                ':\\|':'neutral',
+                ':-\\|':'neutral'
+            };
+
+            Object.keys(emotimap).forEach(function(emoticon) {
+                var smile = emotimap[emoticon];
+                var re = new RegExp(emoticon, 'g');
+                msg = msg.replace(re, '<span class="balabolka-emoticon ' + smile + '"></span>');
+            });
         }
 
         var span = $('<span><strong>' + nick + ':</strong> ' + msg + '</span>');
