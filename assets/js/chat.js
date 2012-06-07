@@ -18,6 +18,9 @@ function main() {
 
     // connected
     room.on('connect', function() {
+        if (_balabolka.nick) {
+            room.emit('nick', _balabolka.nick);
+        }
     });
 }
 
