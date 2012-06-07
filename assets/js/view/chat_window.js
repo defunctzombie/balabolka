@@ -64,14 +64,14 @@ function ChatWindow(room) {
         }
 
         if (opt.peers !== undefined) {
-            show_peer = opt.peers;
+            peer_fn = opt.peers;
         }
     }
 
     // number of users in the room
     room.on('count', function(count) {
         var chat_title = chat_title_fn();
-        if (show_peer) {
+        if (peer_fn) {
             chat_title += peer_fn(count - 1);
         }
 
