@@ -17,8 +17,7 @@ var name = require('./name');
 var kProduction = process.env === 'production';
 var kPubdir = __dirname + '/assets';
 
-var server = new Mongolian(process.env.OPENSHIFT_NOSQL_DB_URL);
-var db = server.db('ya');
+var db = new Mongolian(process.env.MONGODB_CONN_STRING || 'mongodb://localhost/ya');
 
 // previous messages
 var messages = db.collection('messages');
