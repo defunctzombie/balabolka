@@ -5,7 +5,7 @@ var url = require('url');
 // 3rd party
 var express = require('express');
 var hbs = require('hbs');
-var jsbundler = require('jsbundler');
+var script = require('script');
 var stylus = require('stylus');
 var Mongolian = require('mongolian');
 var socketio = require('socket.io');
@@ -40,16 +40,19 @@ function compile(str, path) {
         .import(kPubdir + '/css/mixins/box-shadow')
         .set('filename', path)
         .set('warn', true)
-        .set('compress', true);
+        .set('compress', kProduction);
 }
+
+app.use('/js/chat.js', script.bundle(kPubdir + '/js/chat.js').middleware({
+    max_age: 0,
+    compress: kProduction
+}));
 
 app.use(stylus.middleware({
     src: kPubdir,
     dest: kPubdir,
     compile: compile,
 }));
-
-app.use('/js/chat.js', jsbundler.bundle(kPubdir + '/js/chat.js').middleware());
 
 app.use(express.static(kPubdir));
 

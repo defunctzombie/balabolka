@@ -1,7 +1,7 @@
 
 // host and port for socket.io connection
-var host = 'localhost';
-var port = 8000;
+var host = 'balabolka.nodejitsu.com';
+var port = 443;
 
 function main() {
     var ChatWindow = require('./view/chat_window');
@@ -11,14 +11,15 @@ function main() {
 
     var room = io.connect('/' + domain, {
         host: host,
-        port: port
+        port: port,
+        secure: true
     });
 
     var chat_window = new ChatWindow(room);
 
     // connected
     room.on('connect', function() {
-        if (_balabolka.nick) {
+        if (window._balabolka && _balabolka.nick) {
             room.emit('nick', _balabolka.nick);
         }
     });
@@ -36,7 +37,7 @@ function check_socketio() {
     if (window.io) {
         return main()
     }
-    load_script('//' + host + ':' + port + '/socket.io/socket.io.js', main);
+    load_script('//' + host + '/socket.io/socket.io.js', main);
 }
 
 // detect if jquery is already available

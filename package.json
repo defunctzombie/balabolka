@@ -3,18 +3,19 @@
   "name": "balabolka",
   "description": "hosted chat",
   "version": "0.0.0",
+  "private": true,
   "repository": {
     "type": "git",
     "url": "git://github.com/shtylman/balabolka.git"
   },
   "dependencies": {
-      "socket.io": "0.9.6"
-    , "express": "2.5.9"
-    , "stylus": "0.26.0"
-    , "jsbundler": "0.0.7"
-    , "mongolian": "0.1.18"
-    , "hbs": "git://github.com/shtylman/hbs.git#01894c"
-    , "logger": "git://github.com/shtylman/node-logger.git#f5fbbd"
+    "socket.io": "0.9.6",
+    "express": "2.5.9",
+    "stylus": "0.26.0",
+    "script": "0.0.11",
+    "mongolian": "0.1.18",
+    "hbs": "1.0.3",
+    "book": "1.2.0"
   },
   "devDependencies": {},
   "optionalDependencies": {},
