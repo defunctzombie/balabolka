@@ -1,6 +1,6 @@
 
 // host and port for socket.io connection
-var host = 'balabolka.nodejitsu.com';
+var host = 'balabolka.jitsu.com';
 var port = 443;
 
 function main() {
