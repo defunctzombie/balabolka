@@ -1,62 +1,60 @@
-
-// builtin
 var url = require('url');
 
-// 3rd party
 var express = require('express');
 var hbs = require('hbs');
-var script = require('script');
-var stylus = require('stylus');
+var enchilada = require('enchilada');
 var Mongolian = require('mongolian');
-var socketio = require('socket.io');
+var makeover = require('makeover');
+var stylish = require('stylish');
+var engine = require('engine.io');
+var debug = require('debug')('balabolka');
 
-// locals
 var name = require('./name');
 
-// globals
-var kProduction = process.env === 'production';
+var kProduction = process.env.NODE_ENV === 'production';
 var kPubdir = __dirname + '/assets';
 
-var db = new Mongolian(process.env.MONGODB_CONN_STRING || 'mongodb://localhost/ya');
+var db = new Mongolian(process.env.MONGODB_CONN_STRING || 'mongodb://localhost/balabolka');
 
 // previous messages
 var messages = db.collection('messages');
 
-var app = express.createServer();
+var app = express();
 
-app.register('html', hbs);
 app.set('views', __dirname + '/views');
 app.set('view engine', 'html');
 app.set('view options', {
-    layout: true,
     cache: kProduction
 });
+app.engine('html', hbs.__express);
 
 app.use(express.favicon(kPubdir + '/favicon.ico'));
 
-function compile(str, path) {
-    return stylus(str)
-        .import(kPubdir + '/css/mixins/border-radius')
-        .import(kPubdir + '/css/mixins/box-shadow')
-        .set('filename', path)
-        .set('warn', true)
-        .set('compress', kProduction);
-}
+app.use('/js/chat.js', function(req, res, next) {
+    res.header('cache-control', 'public, max-age: 60');
+    next();
+});
 
-app.use('/js/chat.js', script.bundle(kPubdir + '/js/chat.js').middleware({
-    max_age: 0,
-    compress: kProduction
+app.use(enchilada({
+    src: kPubdir,
+    compress: kProduction,
+    cache: kProduction
 }));
 
-app.use(stylus.middleware({
+app.use(stylish({
     src: kPubdir,
-    dest: kPubdir,
-    compile: compile,
+    cache: kProduction,
+    compress: kProduction,
+    setup: function(renderer) {
+        return renderer.use(makeover())
+    }
 }));
 
 app.use(express.static(kPubdir));
 
-app.error(function(err, req, res, next) {
+app.use(app.router);
+
+app.use(function(err, req, res, next) {
     var status = err.status || 500;
 
     if (status >= 500) {
@@ -92,91 +90,99 @@ app.get('/rooms', function(req, res, next) {
 // domain -> channel
 var rooms = {};
 
-var io = socketio.listen(app);
+var server = app.listen(8080);
+var eio = engine.attach(server);
 
-io.set('log level', -1);
-io.set('browser client etag', true);
-io.set('browser client minification', true);
+eio.on('connection', function (socket) {
+    var req = socket.request;
 
-// intercept global authorization to setup a room for the domain
-io.set('authorization', function (handshakeData, cb) {
-    // get the domain from the origin header and make a room for it
-    var referer = handshakeData.headers.referer || handshakeData.headers.referrer;
-
-    // no connection if no referer
-    cb(null, !!referer);
+    var referer = req.headers.referer || req.headers.referrer;
+    if (!referer) {
+        return socket.close();
+    }
 
     var hostname = url.parse(referer).hostname;
 
+    debug('new connection for hostname: %s', hostname);
+
     // no need to make the room again
-    if (rooms[hostname]) {
-        return;
+    var sockets = rooms[hostname];
+    if (!sockets) {
+        sockets = rooms[hostname] = [];
     }
 
-    // create a new room just for the hostname
-    var room = io.of('/' + hostname);
-    rooms[hostname] = room;
+    // generate a random nickname for the user
+    var nick = name.random();
 
-    var count = 0;
-    room.on('connection', function(socket) {
+    var idx = sockets.push(socket) - 1;
 
-        // generate a random nickname for the user
-        var nick = name.random();
+    function send(msg) {
+        socket.send(JSON.stringify(msg));
+    }
 
-        // inform them of how many peers in the chat
-        // including themselves
-        room.emit('count', ++count);
-
-        socket.on('nick', function(data) {
-            nick = data;
+    function send_all(msg) {
+        sockets.forEach(function(sock) {
+            sock.send(JSON.stringify(msg));
         });
+    }
 
-        socket.on('msg', function(data) {
-            if (!data || data.length === 0) {
-                return;
-            }
-
-            var out = {
-                msg: data,
-                nick: nick,
-                timestamp: new Date()
-            };
-
-            room.emit('msg', out);
-
-            // set hostname
-            out.hostname = hostname;
-            messages.insert(out);
+    function update_count() {
+        send_all({
+            type: 'count',
+            count: sockets.length
         });
+    }
 
-        messages.find({ hostname: hostname }).sort({ timestamp: -1 }).limit(5).toArray(function (err, array) {
-            if (err) {
-                return console.error(err);
-            }
-            else if (!array) {
-                return;
-            }
+    update_count();
 
-            array.reverse();
-            array.forEach(function(msg) {
-                socket.emit('msg', msg);
+    socket.on('message', function (msg) {
+        msg = JSON.parse(msg);
+
+        if (msg.type === 'nick') {
+            nick = msg.nick;
+            return;
+        }
+
+        if (msg.type !== 'msg') {
+            return;
+        }
+
+        if (!msg.text) {
+            return;
+        }
+
+        var out = {
+            type: 'msg',
+            nick: nick,
+            text: msg.text,
+            timestamp: new Date()
+        };
+
+        send_all(out);
+
+        out.hostname = hostname;
+        messages.insert(out);
+    });
+
+    socket.on('close', function () {
+        sockets.splice(idx, 1);
+        update_count();
+    });
+
+    messages.find({ hostname: hostname }).sort({ timestamp: -1 }).limit(5).toArray(function (err, array) {
+        if (err) {
+            return console.error(err);
+        }
+        else if (!array) {
+            return;
+        }
+
+        array.reverse().forEach(function(msg) {
+            send({
+                type: 'msg',
+                nick: msg.nick,
+                text: msg.text
             });
-        });
-
-        socket.on('disconnect', function() {
-            room.emit('count', --count);
         });
     });
 });
-
-var NotFound = function(msg) {
-    Error.call(this);
-    this.name = 'NotFound';
-    this.status = 404;
-    this.message = msg;
-};
-
-if (require.main === module) {
-    app.listen(8000);
-}
-

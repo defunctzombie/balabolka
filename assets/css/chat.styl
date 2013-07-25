@@ -1,3 +1,4 @@
+@import 'makeover/vendor'
 
 .balabolka-window {
     width: 300px;
@@ -33,6 +34,12 @@
         border-left: 1px solid #ddd;
         border-right: 1px solid #ddd;
         background-color: white;
+        transition: max-height 0.15s linear;
+        max-height: 400px;
+
+        &.minimize {
+            max-height: 0;
+        }
     }
 
     .balabolka-messages {
