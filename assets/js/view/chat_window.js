@@ -151,8 +151,10 @@ ChatWindow.prototype.attach = function(socket) {
     });
 
     socket.on('close', function() {
-        // disable interface
+        // disable interface and clear messages
+        // messages will reply on connect
         self._window.style.display = 'none';
+        self._messages.innerHTML = '';
     });
 }
 
