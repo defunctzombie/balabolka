@@ -6,7 +6,7 @@
   "private": true,
   "repository": {
     "type": "git",
-    "url": "git://github.com/shtylman/balabolka.git"
+    "url": "git://github.com/defunctzombie/balabolka.git"
   },
   "dependencies": {
     "engine.io": "defunctzombie/engine.io#server_attach",
@@ -26,12 +26,7 @@
     "envify": "1.0.1"
   },
   "devDependencies": {},
-  "optionalDependencies": {},
   "engines": {
-    "node": "0.6.x"
-  },
-  "subdomain": "balabolka",
-  "scripts": {
-    "start": "server.js"
+    "node": "0.10.x"
   }
 }
