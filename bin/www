@@ -1,0 +1,21 @@
+#!/usr/bin/env node
+
+var debug = require('debug')('balabolka');
+var program = require('commander');
+var balabolka = require('../server');
+var chat_server = require('../chat_server');
+
+program
+.usage('[options]')
+.option('--port [port]', 'Listen on this port [8080]', 8080)
+.parse(process.argv);
+
+var port = program.port;
+
+var server = balabolka.listen(port, function() {
+    debug('listening on port %d', server.address().port);
+});
+
+chat_server.attach(server);
+
+// vim: ft=javascript

@@ -1,16 +1,11 @@
 var engine = require('engine.io-client');
 var ChatWindow = require('./view/chat_window');
 
-var host = 'chat.courseoff.com';
-var port = 443;
+var host = process.env.BALABOLKA_HOST;
+
+var socket = new engine.Socket('ws://' + host);
 
 var chatwindow = ChatWindow(window._balabolka || {});
-
-var socket = new engine.Socket({
-    host: host,
-    port: port
-});
-
 chatwindow.attach(socket);
 
 var recon_timer;
