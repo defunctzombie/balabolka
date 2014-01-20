@@ -1,1 +1,1 @@
-www: node bin/www
+www: bin/www
